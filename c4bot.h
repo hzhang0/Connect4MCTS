@@ -1,5 +1,6 @@
 // c4bot.h
 // Aswin van Woudenberg
+// Haoran Zhang
 
 #ifndef C4BOT_H
 #define C4BOT_H
@@ -24,6 +25,7 @@ class C4Bot {
 	std::vector<std::string> split(const std::string &s, char delim);
 	void setting(std::string &key, std::string &value);
 	void update(std::string &key, std::string &value);
+	Move makeMove(int timeout);
 	void move(int timeout);
 
 public:

@@ -1,8 +1,9 @@
 // c4bot.cpp
 // Aswin van Woudenberg
+// Haoran Zhang
 
 #include "c4bot.h"
-
+#include "node.h"
 #include <iostream>
 #include <sstream>
 
@@ -21,11 +22,17 @@ void C4Bot::run() {
 		}
 	}
 }
-
-void C4Bot::move(int timeout) {
-	// Do something more intelligent here instead of returning a random move
+Move C4Bot::makeMove(int timeout) {
 	std::vector<Move> moves = getMoves(state);
-	std::cout << "place_disc " << *select_randomly(moves.begin(), moves.end()) << std::endl;
+	if (moves.size() == 1) {
+		return moves.at(0);
+	}
+}
+
+
+void C4Bot::move(int timeout) {	
+	Move m = makeMove(timeout);
+	std::cout << "place_disc " << m << std::endl;
 }
 
 void C4Bot::update(std::string &key, std::string &value) {
