@@ -1,9 +1,17 @@
+// Node.cpp
+// Haoran Zhang
 #include "node.h"
 
 Node::Node(Node * p, State s, Moves* m, double u, int v, int t): //state is copied
 	parent(p),  state(s), moves(m), utility(u), visits(v), type(t)
 {
 	children = new Children();
+}
+
+Node::Node(Node& node):
+	Node(node.parent, node.state, &Moves(*node.moves), node.utility, node.visits, node.type)
+{
+
 }
 
 void Node::visit() {

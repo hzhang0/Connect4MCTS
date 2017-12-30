@@ -19,6 +19,7 @@ private:
 	int type; //1 for max, 2 for min, only max nodes have state
 public:
 	Node(Node*, State, Moves*, double, int, int);
+	Node(Node& node);
 	void visit();
 	void addUtility(int score);
 	int getVisits();

@@ -7,9 +7,10 @@
 
 #include <string>
 #include <vector>
+#include <chrono>
 
 #include "c4.h"
-
+#include "Node.h"
 class C4Bot {
 	int timebank;
 	int time_per_move;
@@ -22,9 +23,16 @@ class C4Bot {
 	int round;
 	State state = { { { { Player::None } } } };
 
+	typedef std::chrono::steady_clock::time_point Time;
+	Time begin;
+
 	std::vector<std::string> split(const std::string &s, char delim);
 	void setting(std::string &key, std::string &value);
 	void update(std::string &key, std::string &value);
+	int getTimeLeft();
+	double selectfn(Node* n);
+	double selectfnOP(Node* n);
+	Node* select(Node* n);
 	Move makeMove(int timeout);
 	void move(int timeout);
 

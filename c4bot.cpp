@@ -6,8 +6,12 @@
 #include "node.h"
 #include <iostream>
 #include <sstream>
+#include <chrono>
+#include <cstdlib>
+#include <limits>
 
 void C4Bot::run() {
+	srand(time(NULL));
 	std::string line;
 	while (std::getline(std::cin, line)) {
 		std::vector<std::string> command = split(line, ' ');
@@ -22,16 +26,77 @@ void C4Bot::run() {
 		}
 	}
 }
+
+int C4Bot::getTimeLeft() {
+	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count();
+}
+
+double C4Bot::selectfn(Node* n) {
+	double vi = n->getUtility();
+	int ni = n->getVisits();
+	int np = n->getParent()->getVisits();
+	return (vi + sqrt(2 * log(np) / ni));
+}
+
+double C4Bot::selectfnOP(Node* n) { //modified UCT so that the more you visit a node, the greater the score
+	double vi = n->getUtility();
+	int ni = n->getVisits();
+	int np = n->getParent()->getVisits();
+	return (vi - sqrt(2 * log(np) / ni));
+}
+
+Node* C4Bot::select(Node* n) {
+	if (n->getVisits() == 0 || getWinner(n->getState()) != Player::None) { //no visits or is terminal
+		return n;
+	}
+	Children* minList = n->getChildren();
+	for (int i = 0; i < minList->size(); i++) { //if a min node hasn't been visited, visit a random child of its
+		if (minList->at(i)->getVisits() == 0) {
+			return (minList->at(i)->getChildren()->at(rand()%(minList->at(i)->getChildren()->size())));
+		}
+	}
+	double score = 0;
+	Node* result; 
+	for (int i = 0; i < minList->size(); i++) { //chooses the min node with the highest score
+		double newScore = selectfn(minList->at(i));
+		if (newScore > score) {
+			score = newScore;
+			result = minList->at(i);
+		}
+	}
+	Children* maxList = result->getChildren();
+	for (int i = 0; i < maxList->size(); i++) { 
+		if (maxList->at(i)->getVisits() == 0) {//if a max node hasn't been visited, select that one
+			return maxList->at(i);
+		}
+	}
+	double score2 = std::numeric_limits<double>::max();
+	Node* finalResult;
+	for (int i = 0; i < maxList->size; i++) { //all max nodes have been visited, select the one with the lowest score
+		double newScore = selectfnOP(maxList->at(i));
+		if (newScore < score2) {
+			score2 = newScore;
+			finalResult = maxList->at(i);
+		}
+	}
+	return finalResult;
+}
+
 Move C4Bot::makeMove(int timeout) {
 	std::vector<Move> moves = getMoves(state);
 	if (moves.size() == 1) {
 		return moves.at(0);
 	}
+	Node initial{ nullptr, state, new std::vector<Move>, 0, 0, 1 };
+	while (getTimeLeft() > 50) {
+		Node* current = select(&initial);
+	}
 }
 
 
 void C4Bot::move(int timeout) {	
-	Move m = makeMove(timeout);
+	begin = std::chrono::steady_clock::now();
+	Move m = makeMove(time_per_move + 10000/50);
 	std::cout << "place_disc " << m << std::endl;
 }
 
