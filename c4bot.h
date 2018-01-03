@@ -32,6 +32,7 @@ class C4Bot {
 	int getTimeLeft();
 	double selectfn(Node* n);
 	double selectfnOP(Node* n);
+	Node* expand(Node* n);
 	Node* select(Node* n);
 	Move makeMove(int timeout);
 	void move(int timeout);

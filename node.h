@@ -13,12 +13,12 @@ private:
 	Node* parent;
 	Children* children;
 	State state;
-	Moves* moves;
+	Move move;
 	double utility;
 	int visits;
 	int type; //1 for max, 2 for min, only max nodes have state
 public:
-	Node(Node*, State, Moves*, double, int, int);
+	Node(Node* parent, State state, Move m, double utility, int visits, int type);
 	Node(Node& node);
 	void visit();
 	void addUtility(int score);

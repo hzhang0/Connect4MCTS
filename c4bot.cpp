@@ -45,6 +45,23 @@ double C4Bot::selectfnOP(Node* n) { //modified UCT so that the more you visit a 
 	return (vi - sqrt(2 * log(np) / ni));
 }
 
+Node* C4Bot::expand(Node* n) {
+	std::vector<Move> moves = getMoves(state);
+	for (int i = 0; i < moves.size(); i++) { //simulates player move
+		State s = doMove(state, moves.at(i));
+		Node* newNode = new Node(n, s, moves.at(i), 0, 0, 2);
+		n->addChild(newNode);
+		if (getWinner(s) == Player::None) {
+			std::vector<Move> movesOP = getMoves(s);
+			for (int j = 0; j < movesOP.size(); j++) {
+				State newState = doMove(s, movesOP.at(j));
+				Node* newNodeOP = new Node(newNode, newState, movesOP.at(j), 0, 0, 1);
+				newNode->addChild(newNodeOP);
+			}
+		}
+	}
+}
+
 Node* C4Bot::select(Node* n) {
 	if (n->getVisits() == 0 || getWinner(n->getState()) != Player::None) { //no visits or is terminal
 		return n;
