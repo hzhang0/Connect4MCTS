@@ -45,6 +45,14 @@ double C4Bot::selectfnOP(Node* n) { //modified UCT so that the more you visit a 
 	return (vi - sqrt(2 * log(np) / ni));
 }
 
+void C4Bot::backPropagate(Node* n, int score) {
+	n->visit();
+	n->addUtility(score);
+	if (n->getParent()) {
+		backPropagate(n->getParent(), score);
+	}
+}
+
 Node* C4Bot::expand(Node* n) {
 	std::vector<Move> moves = getMoves(state);
 	for (int i = 0; i < moves.size(); i++) { //simulates player move
