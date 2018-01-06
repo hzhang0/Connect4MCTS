@@ -53,15 +53,30 @@ void C4Bot::backPropagate(Node* n, int score) {
 	}
 }
 
-Node* C4Bot::expand(Node* n) {
+int C4Bot::simulate(State s){
+	Player terminal = getWinner(s);
+	if((terminal == Player::O && your_botid == 0) || (terminal == Player::X && your_botid == 1)){//lose
+		return 0;
+	} else if ((terminal == Player::X && your_botid == 0) || (terminal == Player::O && your_botid == 1)){ //win
+		return 100;
+	}
+	for(int i = 0; i<2; i++){
+		std::vector<Move> moves = getMoves(s);
+		Move best = *select_randomly(moves.begin(), moves.end());
+		s = doMove(s, best);
+	}
+	return simulate(s);
+}
+
+void C4Bot::expand(Node* n) {
 	std::vector<Move> moves = getMoves(state);
-	for (int i = 0; i < moves.size(); i++) { //simulates player move
+	for (size_t i = 0; i < moves.size(); i++) { //simulates player move
 		State s = doMove(state, moves.at(i));
 		Node* newNode = new Node(n, s, moves.at(i), 0, 0, 2);
 		n->addChild(newNode);
 		if (getWinner(s) == Player::None) {
 			std::vector<Move> movesOP = getMoves(s);
-			for (int j = 0; j < movesOP.size(); j++) {
+			for (size_t j = 0; j < movesOP.size(); j++) {
 				State newState = doMove(s, movesOP.at(j));
 				Node* newNodeOP = new Node(newNode, newState, movesOP.at(j), 0, 0, 1);
 				newNode->addChild(newNodeOP);
@@ -75,14 +90,14 @@ Node* C4Bot::select(Node* n) {
 		return n;
 	}
 	Children* minList = n->getChildren();
-	for (int i = 0; i < minList->size(); i++) { //if a min node hasn't been visited, visit a random child of its
+	for (size_t i = 0; i < minList->size(); i++) { //if a min node hasn't been visited, visit a random child of its
 		if (minList->at(i)->getVisits() == 0) {
 			return (minList->at(i)->getChildren()->at(rand()%(minList->at(i)->getChildren()->size())));
 		}
 	}
 	double score = 0;
-	Node* result; 
-	for (int i = 0; i < minList->size(); i++) { //chooses the min node with the highest score
+	Node* result = nullptr; 
+	for (size_t i = 0; i < minList->size(); i++) { //chooses the min node with the highest score
 		double newScore = selectfn(minList->at(i));
 		if (newScore > score) {
 			score = newScore;
@@ -90,14 +105,14 @@ Node* C4Bot::select(Node* n) {
 		}
 	}
 	Children* maxList = result->getChildren();
-	for (int i = 0; i < maxList->size(); i++) { 
+	for (size_t i = 0; i < maxList->size(); i++) { 
 		if (maxList->at(i)->getVisits() == 0) {//if a max node hasn't been visited, select that one
 			return maxList->at(i);
 		}
 	}
 	double score2 = std::numeric_limits<double>::max();
-	Node* finalResult;
-	for (int i = 0; i < maxList->size; i++) { //all max nodes have been visited, select the one with the lowest score
+	Node* finalResult = nullptr;
+	for (size_t i = 0; i < maxList->size(); i++) { //all max nodes have been visited, select the one with the lowest score
 		double newScore = selectfnOP(maxList->at(i));
 		if (newScore < score2) {
 			score2 = newScore;
@@ -109,13 +124,16 @@ Node* C4Bot::select(Node* n) {
 
 Move C4Bot::makeMove(int timeout) {
 	std::vector<Move> moves = getMoves(state);
-	if (moves.size() == 1) {
-		return moves.at(0);
-	}
-	Node initial{ nullptr, state, new std::vector<Move>, 0, 0, 1 };
-	while (getTimeLeft() > 50) {
-		Node* current = select(&initial);
-	}
+    std::cout << "place_disc " << *select_randomly(moves.begin(), moves.end()) << std::endl;
+
+	// std::vector<Move> moves = getMoves(state);
+	// if (moves.size() == 1) {
+	// 	return moves.at(0);
+	// }
+	// Node initial{ nullptr, state, 0, 0, 0, 1 };
+	// while (getTimeLeft() > 50) {
+	// 	Node* current = select(&initial);
+	// }
 }
 
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include <vector>
-#include "c4.h";
+#include "c4.h"
 
 class Node;
 typedef std::vector<Move> Moves;

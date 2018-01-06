@@ -43,7 +43,7 @@ Children* Node::getChildren() {
 }
 
 void Node::addChild(Node* n) {
-	children.push_back(n);
+	children->push_back(n);
 }
 
 Moves * Node::getMoves()

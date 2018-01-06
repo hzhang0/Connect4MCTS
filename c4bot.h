@@ -10,7 +10,7 @@
 #include <chrono>
 
 #include "c4.h"
-#include "Node.h"
+#include "node.h"
 class C4Bot {
 	int timebank;
 	int time_per_move;
@@ -33,7 +33,8 @@ class C4Bot {
 	double selectfn(Node* n);
 	double selectfnOP(Node* n);
 	void backPropagate(Node* n, int score);
-	Node* expand(Node* n);
+	int simulate(State s);
+	void expand(Node* n);
 	Node* select(Node* n);
 	Move makeMove(int timeout);
 	void move(int timeout);
