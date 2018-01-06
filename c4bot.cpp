@@ -27,7 +27,7 @@ void C4Bot::run() {
 	}
 }
 
-int C4Bot::getTimeLeft() {
+int C4Bot::getTimeElapsed() {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count();
 }
 
@@ -72,13 +72,17 @@ void C4Bot::expand(Node* n) {
 	std::vector<Move> moves = getMoves(state);
 	for (size_t i = 0; i < moves.size(); i++) { //simulates player move
 		State s = doMove(state, moves.at(i));
-		Node* newNode = new Node(n, s, moves.at(i), 0, 0, 2);
+		std::vector<Move> nodeMoves = n->getMoves();
+		nodeMoves.push_back(moves.at(i));
+		Node* newNode = new Node(n, s, nodeMoves, 0, 0, 2);
 		n->addChild(newNode);
 		if (getWinner(s) == Player::None) {
-			std::vector<Move> movesOP = getMoves(s);
+			std::vector<Move> movesOP = getMoves(s);			
 			for (size_t j = 0; j < movesOP.size(); j++) {
 				State newState = doMove(s, movesOP.at(j));
-				Node* newNodeOP = new Node(newNode, newState, movesOP.at(j), 0, 0, 1);
+				std::vector<Move> nodeMovesOP = newNode->getMoves();
+				nodeMovesOP.push_back(movesOP.at(j));
+				Node* newNodeOP = new Node(newNode, newState, nodeMovesOP, 0, 0, 1);
 				newNode->addChild(newNodeOP);
 			}
 		}
@@ -123,17 +127,28 @@ Node* C4Bot::select(Node* n) {
 }
 
 Move C4Bot::makeMove(int timeout) {
-	std::vector<Move> moves = getMoves(state);
-    std::cout << "place_disc " << *select_randomly(moves.begin(), moves.end()) << std::endl;
+    //std::cout << "place_disc " << *select_randomly(moves.begin(), moves.end()) << std::endl;
 
-	// std::vector<Move> moves = getMoves(state);
-	// if (moves.size() == 1) {
-	// 	return moves.at(0);
-	// }
-	// Node initial{ nullptr, state, 0, 0, 0, 1 };
-	// while (getTimeLeft() > 50) {
-	// 	Node* current = select(&initial);
-	// }
+	std::vector<Move> moves = getMoves(state);
+	if (moves.size() == 1) {
+		return moves.at(0);
+	}
+	Node initial{ nullptr, state, std::vector<Move>(), 0, 0, 1 };
+	while (timeout - getTimeElapsed() > 50) {
+		Node* current = select(&initial);
+		expand(current);
+		int score = simulate(current->getState());
+		backPropagate(current, score);
+	}
+	double bestScore = 0;
+	Move move(0);
+	for(size_t i = 0; i<initial.getChildren()->size(); i++){
+		if (initial.getChildren()->at(i)->getUtility() > bestScore){
+			bestScore = initial.getChildren()->at(i)->getUtility();
+			move = initial.getChildren()->at(i)->getMoves().at(0);
+		}
+	}
+	return move;
 }
 
 

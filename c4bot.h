@@ -29,7 +29,7 @@ class C4Bot {
 	std::vector<std::string> split(const std::string &s, char delim);
 	void setting(std::string &key, std::string &value);
 	void update(std::string &key, std::string &value);
-	int getTimeLeft();
+	int getTimeElapsed();
 	double selectfn(Node* n);
 	double selectfnOP(Node* n);
 	void backPropagate(Node* n, int score);

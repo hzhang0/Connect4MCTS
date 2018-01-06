@@ -2,14 +2,14 @@
 // Haoran Zhang
 #include "node.h"
 
-Node::Node(Node* parent, State state, Move m, double utility, int visits, int type): //state is copied
-	parent(parent),  state(state), move(m), utility(utility), visits(visits), type(type)
+Node::Node(Node* parent, State state, Moves m, double utility, int visits, int type): //state is copied
+	parent(parent),  state(state), moves(m), utility(utility), visits(visits), type(type)
 {
 	children = new Children();
 }
 
 Node::Node(Node& node):
-	Node(node.parent, node.state, node.move , node.utility, node.visits, node.type)
+	Node(node.parent, node.state, node.moves , node.utility, node.visits, node.type)
 {
 
 }
@@ -46,7 +46,7 @@ void Node::addChild(Node* n) {
 	children->push_back(n);
 }
 
-Moves * Node::getMoves()
+Moves Node::getMoves() //return copy
 {
-	return nullptr;
+	return moves;
 }
