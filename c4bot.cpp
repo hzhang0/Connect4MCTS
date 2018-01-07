@@ -73,17 +73,13 @@ void C4Bot::expand(Node* n) {
 	std::vector<Move> moves = getMoves(state);
 	for (size_t i = 0; i < moves.size(); i++) { //simulates player move
 		State s = doMove(state, moves.at(i));
-		std::vector<Move> nodeMoves = n->getMoves();
-		nodeMoves.push_back(moves.at(i));
-		Node* newNode = new Node(n, s, nodeMoves, 0, 0, 2);
+		Node* newNode = new Node(n, s, moves.at(i), 0, 0, 2);
 		n->addChild(newNode);
 		if (getWinner(s) == Player::None) {
 			std::vector<Move> movesOP = getMoves(s);			
 			for (size_t j = 0; j < movesOP.size(); j++) {
 				State newState = doMove(s, movesOP.at(j));
-				std::vector<Move> nodeMovesOP = newNode->getMoves();
-				nodeMovesOP.push_back(movesOP.at(j));
-				Node* newNodeOP = new Node(newNode, newState, nodeMovesOP, 0, 0, 1);
+				Node* newNodeOP = new Node(newNode, newState, movesOP.at(j), 0, 0, 1);
 				newNode->addChild(newNodeOP);
 			}
 		}
@@ -91,7 +87,7 @@ void C4Bot::expand(Node* n) {
 }
 
 Node* C4Bot::select(Node* n) {
-	if (n->getVisits() == 0 || getWinner(n->getState()) != Player::None) { //no visits or is terminal
+	if (n->getVisits() == 0 || getWinner(n->getState()) != Player::None || getMoves(n->getState()).size() == 0) { //no visits or is terminal
 		return n;
 	}
 	Children* minList = n->getChildren();
@@ -135,8 +131,8 @@ Move C4Bot::makeMove(int timeout) {
 	if (moves.size() == 1) {
 		return moves.at(0);
 	}
-	Node initial{ nullptr, state, std::vector<Move>(), 0, 0, 1 };
-	while (timeout - getTimeElapsed() > 150) {
+	Node initial{ nullptr, state, 0, 0, 0, 1 };
+	while (timeout - getTimeElapsed() > 200) {
 		Node* current = select(&initial);
 		expand(current);
 		int score = simulate(current->getState());
@@ -147,7 +143,7 @@ Move C4Bot::makeMove(int timeout) {
 	for(size_t i = 0; i<initial.getChildren()->size(); i++){
 		if (initial.getChildren()->at(i)->getUtility() > bestScore){
 			bestScore = initial.getChildren()->at(i)->getUtility();
-			move = initial.getChildren()->at(i)->getMoves().at(0);
+			move = initial.getChildren()->at(i)->getMove();
 		}
 	}
 	return move;
