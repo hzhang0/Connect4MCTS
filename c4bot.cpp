@@ -60,11 +60,12 @@ int C4Bot::simulate(State s){
 	} else if ((terminal == Player::X && your_botid == 0) || (terminal == Player::O && your_botid == 1)){ //win
 		return 100;
 	}
-	for(int i = 0; i<2; i++){
-		std::vector<Move> moves = getMoves(s);
-		Move best = *select_randomly(moves.begin(), moves.end());
-		s = doMove(s, best);
+	std::vector<Move> moves = getMoves(s);
+	if (moves.size() == 0){ //draw
+		return 50;
 	}
+	Move best = moves.at(std::rand()%(moves.size()));
+	s = doMove(s, best);
 	return simulate(s);
 }
 
@@ -127,14 +128,15 @@ Node* C4Bot::select(Node* n) {
 }
 
 Move C4Bot::makeMove(int timeout) {
-    //std::cout << "place_disc " << *select_randomly(moves.begin(), moves.end()) << std::endl;
+	// std::vector<Move> moves = getMoves(state);
+    // return *select_randomly(moves.begin(), moves.end());
 
 	std::vector<Move> moves = getMoves(state);
 	if (moves.size() == 1) {
 		return moves.at(0);
 	}
 	Node initial{ nullptr, state, std::vector<Move>(), 0, 0, 1 };
-	while (timeout - getTimeElapsed() > 50) {
+	while (timeout - getTimeElapsed() > 150) {
 		Node* current = select(&initial);
 		expand(current);
 		int score = simulate(current->getState());
