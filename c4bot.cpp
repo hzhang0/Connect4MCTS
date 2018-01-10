@@ -75,7 +75,7 @@ void C4Bot::expand(Node* n) {
 		State s = doMove(state, moves.at(i));
 		Node* newNode = new Node(n, s, moves.at(i), 0, 0, 2);
 		n->addChild(newNode);
-		if (getWinner(s) == Player::None) {
+		if (getWinner(s) == Player::None && getMoves(n->getState()).size() > 0) {
 			std::vector<Move> movesOP = getMoves(s);			
 			for (size_t j = 0; j < movesOP.size(); j++) {
 				State newState = doMove(s, movesOP.at(j));
@@ -93,14 +93,14 @@ Node* C4Bot::select(Node* n) {
 	Children* minList = n->getChildren();
 	for (size_t i = 0; i < minList->size(); i++) { //if a min node hasn't been visited, visit a random child of its
 		if (minList->at(i)->getVisits() == 0) {
-			return (minList->at(i)->getChildren()->at(rand()%(minList->at(i)->getChildren()->size())));
+			return (minList->at(i));
 		}
 	}
 	double score = 0;
-	Node* result = nullptr; 
+	Node* result = minList->at(0);
 	for (size_t i = 0; i < minList->size(); i++) { //chooses the min node with the highest score
 		double newScore = selectfn(minList->at(i));
-		if (newScore > score) {
+		if (newScore > score && result->getChildren()->size() > 0) {
 			score = newScore;
 			result = minList->at(i);
 		}
