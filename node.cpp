@@ -3,9 +3,8 @@
 #include "node.h"
 
 Node::Node(Node* parent, State state, Move m, double utility, int visits, int type): //state is copied
-	parent(parent),  state(state), move(m), utility(utility), visits(visits), type(type)
+	parent(parent),  state(state), move(m), utility(utility), visits(visits), type(type), children()
 {
-	children = new Children();
 }
 
 Node::Node(Node& node):
@@ -39,11 +38,11 @@ State Node::getState() {
 }
 
 Children* Node::getChildren() {
-	return children;
+	return &children;
 }
 
 void Node::addChild(Node* n) {
-	children->push_back(n);
+	children.push_back(n);
 }
 
 Move Node::getMove()
@@ -52,7 +51,7 @@ Move Node::getMove()
 }
 
 Node::~Node(){
-	for(size_t i =0; i<children->size(); i++){
-		delete children->at(i);
+	for(size_t i =0; i<children.size(); i++){
+		delete children.at(i);
 	}
 }

@@ -11,7 +11,7 @@ typedef std::vector<Node*> Children;
 class Node {	
 private:
 	Node* parent;
-	Children* children;
+	Children children;
 	State state;
 	Move move;
 	double utility;
