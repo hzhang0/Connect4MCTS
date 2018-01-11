@@ -132,7 +132,7 @@ Move C4Bot::makeMove(int timeout) {
 		return moves.at(0);
 	}
 	Node initial{ nullptr, state, 0, 0, 0, 1 };
-	while (timeout - getTimeElapsed() > 200) {
+	while (timeout - getTimeElapsed() > 175) {
 		Node* current = select(&initial);
 		expand(current);
 		int score = simulate(current->getState());
@@ -152,7 +152,7 @@ Move C4Bot::makeMove(int timeout) {
 
 void C4Bot::move(int timeout) {	
 	begin = std::chrono::steady_clock::now();
-	Move m = makeMove(time_per_move + 10000/50);
+	Move m = makeMove(time_per_move + 10000/30);
 	std::cout << "place_disc " << m << std::endl;
 }
 
